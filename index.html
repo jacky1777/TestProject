@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Array Converter</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+.container { display: flex; height: 100vh; }
+.panel { flex: 1; padding: 10px; }
+textarea { width: 100%; height: calc(100% - 20px); }
+.buttons { display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 10px; }
+.buttons button { margin: 5px 0; width: 120px; }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="panel">
+        <textarea id="output" readonly></textarea>
+    </div>
+    <div class="buttons">
+        <button id="toSql">To SQL array</button>
+        <button id="toCSharp">To C# array</button>
+        <button id="toJson">To JSON array</button>
+    </div>
+    <div class="panel">
+        <textarea id="input"></textarea>
+    </div>
+</div>
+<script>
+function getLines() {
+    const text = document.getElementById('input').value;
+    return text.split(/\r?\n/).map(line => line.trim()).filter(line => line.length > 0);
+}
+function escapeSql(str) {
+    return str.replace(/'/g, "''");
+}
+function escapeCSharp(str) {
+    return str.replace(/"/g, '\\"');
+}
+function toSql() {
+    const lines = getLines().map(l => "'" + escapeSql(l) + "'");
+    document.getElementById('output').value = '(' + lines.join(', ') + ')';
+}
+function toCSharp() {
+    const lines = getLines().map(l => '"' + escapeCSharp(l) + '"');
+    document.getElementById('output').value = 'new[] { ' + lines.join(', ') + ' }';
+}
+function toJson() {
+    const lines = getLines().map(l => JSON.stringify(l));
+    document.getElementById('output').value = '[' + lines.join(', ') + ']';
+}
+document.getElementById('toSql').addEventListener('click', toSql);
+document.getElementById('toCSharp').addEventListener('click', toCSharp);
+document.getElementById('toJson').addEventListener('click', toJson);
+</script>
+</body>
+</html>
